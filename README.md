@@ -1,4 +1,4 @@
-# evocaition-vscext 
+# evocaition-vscext v0.1.0
 
 This is the source code for the Visual Studio Code extension named `evocaition`,
 which gives the editor the ability to invoke the `evocaition` command-line tool
@@ -104,6 +104,8 @@ Alternatively, you can directly edit the User Settings (JSON) file:
 
 ### Additional Settings
 
+These settings are only able to be set manually in the user settings JSON file.
+
 * **`evocaition.seed`**: (integer) An optional seed value for reproducibility.
 	+ Example: `"evocaition.seed": 42`
 	+ **Note:** Not currently configurable via a specific command; set directly in User Settings JSON.
@@ -138,7 +140,7 @@ The extension can be built into a package file and then installed:
 
 ```bash
 vsce package
-code --install-extension evocaition-vscext-0.0.1.vsix
+code --install-extension evocaition-vscext-<VERSION>.vsix
 ```
 
 

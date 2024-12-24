@@ -6,7 +6,7 @@
   },
   "displayName": "Evocaition",
   "description": "VS Code support for calling the command-line tool 'evocaition' to generate text with AI.",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/tbogdala/evocaition-vscext.git"
