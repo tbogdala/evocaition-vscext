@@ -81,17 +81,27 @@
     "configuration": {
       "title": "evocation",
       "properties": {
-
-        "yourExtension.apiKey": {
-          "type": ["string", "null"],
+        "evocaition.promptTemplate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "The nunjucks template used to construct the prompt sent to the AI."
+        },
+        "evocaition.apiKey": {
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "API Key for the endpoint being used"
         },
-
         "evocaition.apiEndpoint": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "The API endpoint URL to use, such as 'https://openrouter.ai/api'"
         },
-
         "evocaition.modelId": {
           "type": "string",
           "default": "meta-llama/llama-3.2-1b-instruct",
@@ -112,46 +122,51 @@
         "evocaition.temperature": {
           "type": "number",
           "default": 0.7,
-          "minimum": 0.0,
+          "minimum": 0,
           "description": "Temperature for sampling"
         },
         "evocaition.topP": {
-            "type": "number",
-            "default": 0.8,
-            "minimum": 0.0,
-            "maximum": 1.0,
-            "description": "Top-p (nucleus) sampling value"
+          "type": "number",
+          "default": 0.8,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Top-p (nucleus) sampling value"
         },
         "evocaition.minP": {
-            "type": "number",
-            "default": 0.05,
-            "minimum": 0.0,
-            "maximum": 1.0,
-            "description": "Minimum probability threshold"
+          "type": "number",
+          "default": 0.05,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Minimum probability threshold"
         },
         "evocaition.topK": {
-            "type": "integer",
-            "default": 40,
-            "minimum": 0,
-            "description": "Number of top tokens to include in sampling"
+          "type": "integer",
+          "default": 40,
+          "minimum": 0,
+          "description": "Number of top tokens to include in sampling"
         },
         "evocaition.repPen": {
-            "type": "number",
-            "default": 1.0,
-            "minimum": 0.0,
-            "description": "Repetition penalty that makes it less likely to repeat tokens if set high"
+          "type": "number",
+          "default": 1,
+          "minimum": 0,
+          "description": "Repetition penalty that makes it less likely to repeat tokens if set high"
         },
         "evocaition.seed": {
-            "type": ["integer", "null"],
-            "default": null,
-            "description": "If specified, the inferencing will sample deterministically, though that is not necessarily guaranteed by endpoints."
+          "type": [
+            "integer",
+            "null"
+          ],
+          "default": null,
+          "description": "If specified, the inferencing will sample deterministically, though that is not necessarily guaranteed by endpoints."
         },
         "evocaition.documentContextCharacterLength": {
-          "type": ["integer"],
+          "type": [
+            "integer"
+          ],
           "default": 3000,
           "minimum": 0,
           "description": "The number of characters to pull before the cursor in the active document for context in the prompt sent to the AI."
-      }
+        }
       }
     }
   },
@@ -164,14 +179,18 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.96.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
+    "@types/nunjucks": "^3.2.6",
+    "@types/vscode": "^1.96.0",
     "@typescript-eslint/eslint-plugin": "^8.17.0",
     "@typescript-eslint/parser": "^8.17.0",
-    "eslint": "^9.16.0",
-    "typescript": "^5.7.2",
     "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1"
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.16.0",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "nunjucks": "^3.2.4"
   }
 }

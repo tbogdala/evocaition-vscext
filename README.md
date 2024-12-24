@@ -73,7 +73,10 @@ Alternatively, you can directly edit the User Settings (JSON) file:
 ### Model and Generation Settings
 
 * **`evocaition.modelId`**: (string) The ID of the model to use for text generation.
-	+ Example: `"evocaition.modelId": "mygetModelID"`
+	+ Example: `"evocaition.modelId": "meta-llama/llama-3.3-70b-instruct"`
+	+ **Note**: The example above uses OpenRouter syntax. LM Studio would expect something 
+	like "llama-3.3-70b-instruct" for the same model or "llama-3.3-70b-instruct@q4_k_s" for 
+	specifying a quantization size.
 * **`evocaition.maxTokens`**: (integer) The maximum number of tokens to generate.
 	+ Default: `0` (no limit)
 	+ Example: `"evocaition.maxTokens": 512`
@@ -108,7 +111,10 @@ Alternatively, you can directly edit the User Settings (JSON) file:
 	pull from the active document to send to the AI as part of the prompt.
 	+ Default: 3000
 	+ Example: `"evocaition.documentContextCharacterLength": 10240`
-
+* **`evocaition.promptTemplate`** (string) An optional string template to pass as the prompt for text generation.
+	It uses [nunjucks](https://mozilla.github.io/nunjucks/) for template syntax.
+	+ Default: `"You are a creative writing specialist AI. Continue the following text:\n\n{{ documentBody }}"`
+	+ Example: `"evocaition.documentContextCharacterLength": 10240`
 
 ## Installation
 

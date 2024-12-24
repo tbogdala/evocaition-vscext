@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import * as nunjucks from 'nunjucks';
 import { exec }  from 'child_process';
 
 interface TextOptions {
@@ -9,7 +10,7 @@ interface TextOptions {
     currentLineOnly?: boolean;   // get only current line up to cursor
 }
 
-function getTextUpToCursor(options: TextOptions = { wholeDocument: true }): string | null {
+function getTextUpToCursor(maxChars: number): string | null {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
         vscode.window.showErrorMessage('No active text editor');
@@ -20,24 +21,37 @@ function getTextUpToCursor(options: TextOptions = { wholeDocument: true }): stri
     const position = editor.selection.active;
 
     try {
-        if (options.currentLineOnly) {
-            return document.lineAt(position.line).text.substring(0, position.character);
-        }
-
         // Get the full text up to cursor
         const range = new vscode.Range(
             new vscode.Position(0, 0),
             position
         );
         const text = document.getText(range);
+		return text.slice(-maxChars);
+    } catch (error) {
+        vscode.window.showErrorMessage('Error getting text: ' + error);
+        return null;
+    }
+}
 
-        // If maxChars is specified, take only the last N characters
-        if (options.maxChars) {
-            return text.slice(-options.maxChars);
-        }
+function getTextAfterCursor(maxChars: number): string | null {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        vscode.window.showErrorMessage('No active text editor');
+        return null;
+    }
 
-        return text;
+    const document = editor.document;
+    const position = editor.selection.active;
 
+    try {
+        // Get the full text after cursor
+        const range = new vscode.Range(
+            position,
+            new vscode.Position(document.lineCount - 1, document.lineAt(document.lineCount - 1).text.length)
+        );
+        const text = document.getText(range);
+		return text.slice(0, maxChars);
     } catch (error) {
         vscode.window.showErrorMessage('Error getting text: ' + error);
         return null;
@@ -72,10 +86,18 @@ function executeEvocaitionCommand(returnType: 'text' | 'sentence') {
 	const apiEndpoint = config.get('apiEndpoint');
 
 	// grab the configured number of characters from the document for context
-	const documentContextSize = config.get<number>('documentContextCharacterLength');
-	const documentTail = getTextUpToCursor({ maxChars: documentContextSize });
-	const promptStart = 'You are a creative writing specialist AI. Continue the following text:\n\n';
-	const prompt = escapeShellText(promptStart + documentTail);
+	const documentContextSize = config.get<number>('documentContextCharacterLength', 3000);
+	const documentBodyBefore = getTextUpToCursor(documentContextSize);
+//	const documentBodyAfter = getTextAfterCursor(1000); //FIXME: Make variable
+	
+	const promptTemplate = config.get('promptTemplate', 
+		`You are a creative writing specialist AI. Continue the following text:\n\n{{ documentBefore }}`);
+		
+	const promptData = { 
+		documentBefore: documentBodyBefore,
+//		documentAfter: documentBodyAfter,
+	};
+	const prompt = escapeShellText(nunjucks.renderString(promptTemplate, promptData));
 
 	// Build command
 	let cmd = `evocaition --plain --prompt "${prompt}" --model-id "${modelId}" --temp ${temp} --top-k ${topK} --top-p ${topP} --min-p ${minP} --rep-pen ${repPen}`;
@@ -92,10 +114,10 @@ function executeEvocaitionCommand(returnType: 'text' | 'sentence') {
 		cmd += ` --seed ${seed}`;
 	}
 	if (apiKey !== null) {
-		cmd += `  --key ${apiKey}`;
+		cmd += ` --key "${apiKey}"`;
 	}
-	if (apiEndpoint !== null) {
-		cmd += `  --api "${apiEndpoint}"`;
+	if (apiEndpoint !== null && apiEndpoint !== '') {
+		cmd += ` --api "${apiEndpoint}"`;
 	}
 
 	console.log('evocation command: ', cmd);
