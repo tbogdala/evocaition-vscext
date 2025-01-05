@@ -6,7 +6,7 @@
   },
   "displayName": "Evocaition",
   "description": "VS Code support for calling the command-line tool 'evocaition' to generate text with AI.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/tbogdala/evocaition-vscext.git"
@@ -86,6 +86,7 @@
             "string",
             "null"
           ],
+          "default": null,
           "description": "The nunjucks template used to construct the prompt sent to the AI."
         },
         "evocaition.apiKey": {
@@ -93,6 +94,7 @@
             "string",
             "null"
           ],
+          "default": null,
           "description": "API Key for the endpoint being used"
         },
         "evocaition.apiEndpoint": {
@@ -100,6 +102,7 @@
             "string",
             "null"
           ],
+          "default": null,
           "description": "The API endpoint URL to use, such as 'https://openrouter.ai/api'"
         },
         "evocaition.modelId": {
@@ -160,9 +163,7 @@
           "description": "If specified, the inferencing will sample deterministically, though that is not necessarily guaranteed by endpoints."
         },
         "evocaition.documentContextCharacterLength": {
-          "type": [
-            "integer"
-          ],
+          "type":"integer",
           "default": 3000,
           "minimum": 0,
           "description": "The number of characters to pull before the cursor in the active document for context in the prompt sent to the AI."

@@ -1,4 +1,4 @@
-# evocaition-vscext v0.1.0
+# evocaition-vscext v0.1.1
 
 This is the source code for the Visual Studio Code extension named `evocaition`,
 which gives the editor the ability to invoke the `evocaition` command-line tool

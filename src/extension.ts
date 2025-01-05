@@ -75,27 +75,25 @@ function executeEvocaitionCommand(returnType: 'text' | 'sentence') {
 
 	// Pull our settings out of it
 	const modelId = config.get<string>('modelId');
-	const maxTokens = config.get('maxTokens', 0);
-	const temp = config.get<number>('temperature', 1.0);
-	const topP = config.get<number>('topP', 0.9);
-	const minP = config.get<number>('minP', 0.0);
-	const topK = config.get<number>('topK', 0);
-	const repPen = config.get<number>('repPen', 0);
+	const maxTokens = config.get('maxTokens');
+	const temp = config.get<number>('temperature');
+	const topP = config.get<number>('topP');
+	const minP = config.get<number>('minP');
+	const topK = config.get<number>('topK');
+	const repPen = config.get<number>('repPen');
 	const seed = config.get('seed');
 	const apiKey = config.get('apiKey');
 	const apiEndpoint = config.get('apiEndpoint');
 
 	// grab the configured number of characters from the document for context
-	const documentContextSize = config.get<number>('documentContextCharacterLength', 3000);
+	const documentContextSize = config.get<number>('documentContextCharacterLength') ?? 3000;
 	const documentBodyBefore = getTextUpToCursor(documentContextSize);
-//	const documentBodyAfter = getTextAfterCursor(1000); //FIXME: Make variable
 	
-	const promptTemplate = config.get('promptTemplate', 
-		`You are a creative writing specialist AI. Continue the following text:\n\n{{ documentBefore }}`);
+	const promptTemplate = config.get<string>('promptTemplate') ??
+		`You are a creative writing specialist AI. Continue the following text:\n\n{{ documentBefore }}`;
 		
 	const promptData = { 
 		documentBefore: documentBodyBefore,
-//		documentAfter: documentBodyAfter,
 	};
 	const prompt = escapeShellText(nunjucks.renderString(promptTemplate, promptData));
 
@@ -154,15 +152,41 @@ function registerConfigSetCommand(
     prompt: string
 ) {
     const disposable = vscode.commands.registerCommand(commandName, async () => {
-        const currentValue = vscode.workspace.getConfiguration('evocaition').get(configKey);
+        const config = vscode.workspace.getConfiguration('evocaition');
+        const currentValue = config.get(configKey);
         const input = await vscode.window.showInputBox({
             prompt: prompt,
             value: currentValue?.toString() || ''
         });
 
-        if (input !== undefined) {
-            vscode.workspace.getConfiguration('evocaition').update(configKey, input, vscode.ConfigurationTarget.Global);
-            vscode.window.showInformationMessage(`Updated ${configKey} to ${input}`);
+		// make sure that we end up writing the input value out as a specific type
+		// so that everything is not just a 'string' ...
+		if (input !== undefined) {
+            let valueToSet: any = input;
+            const configType = config.inspect(configKey)?.defaultValue?.constructor.name;
+
+            if (configType === 'Number') {
+                const parsedNumber = parseFloat(input);
+                if (!isNaN(parsedNumber)) {
+                    valueToSet = parsedNumber;
+                } else {
+                    vscode.window.showErrorMessage(`Invalid number: ${input}`);
+                    return;
+                }
+            } else if (configType === 'Boolean') {
+                const parsedBoolean = input.toLowerCase();
+                if (parsedBoolean === 'true') {
+                    valueToSet = true;
+                } else if (parsedBoolean === 'false') {
+                    valueToSet = false;
+                } else {
+                    vscode.window.showErrorMessage(`Invalid boolean: ${input}`);
+                    return;
+                }
+            }
+
+            config.update(configKey, valueToSet, vscode.ConfigurationTarget.Global);
+            vscode.window.showInformationMessage(`Updated ${configKey} to ${valueToSet}`);
         }
     });
 
